@@ -3,210 +3,302 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PWA Install Prompt</title>
-    <!-- Tailwind CSS for utility classes -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts for a futuristic look -->
+    <title>Motion Power Sphere</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
-    <!-- Tone.js for the audio effect. This is a CDN link, so the library is loaded from the web. -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        /* Custom CSS for the button and visual effects */
         :root {
-            --neon-blue: #00e0ff;
-            --neon-pink: #ff00e0;
-            --button-glow: #00e0ff;
-        }
-
-        body {
-            /* The image URL is a placeholder as external GIFs can't be used directly */
-            background-image: url('https://tiffyai.github.io/Offline-/withdrawal.gif');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            font-family: 'Orbitron', sans-serif;
-        }
-
-        .futuristic-button {
-            position: relative;
-            z-index: 10;
-            cursor: pointer;
-            outline: none;
-            border: 2px solid transparent; /* Invisible border to start */
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(5px);
-            color: var(--neon-blue);
-            font-size: 1.5rem;
-            padding: 1rem 3rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            box-shadow: 0 0 10px var(--neon-blue),
-                        0 0 20px var(--neon-blue),
-                        0 0 40px var(--neon-blue);
-            transition: all 0.3s ease-in-out,
-                        box-shadow 1.5s infinite ease-in-out;
-            animation: pulse-glow 2s infinite alternate ease-in-out;
-        }
-
-        .futuristic-button::before {
-            content: '';
-            position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
-            background: linear-gradient(45deg, var(--neon-blue), var(--neon-pink));
-            z-index: -1;
-            filter: blur(8px);
-            transition: opacity 0.3s ease-in-out;
-            opacity: 0.5;
-        }
-
-        .futuristic-button:hover::before {
-            opacity: 1;
-            animation: none;
+            --gradient-start: #3b82f6; /* Tailwind blue-500 */
+            --gradient-end: #60a5fa;   /* Tailwind blue-400 */
+            --glow-color: rgba(59, 130, 246, 0.7); /* Tailwind blue-500 with transparency */
+            --sphere-start: #1e40af; /* Tailwind blue-800 */
+            --sphere-end: #1c3374;   /* Darker blue for depth */
         }
         
-        .futuristic-button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 15px var(--neon-pink),
-                        0 0 30px var(--neon-pink),
-                        0 0 60px var(--neon-pink);
-            color: var(--neon-pink);
-        }
-
-        @keyframes pulse-glow {
-            0% { box-shadow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-blue); }
-            100% { box-shadow: 0 0 20px var(--neon-blue), 0 0 40px var(--neon-blue); }
-        }
-
-        .status-message {
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(3px);
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at center, #111827 0%, #000000 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             color: white;
             padding: 1rem;
-            border-radius: 0.75rem;
-            border: 1px solid var(--neon-blue);
-            box-shadow: 0 0 10px var(--neon-blue);
+            overflow: hidden;
+            position: relative;
         }
 
-        .ios-message {
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(3px);
-            color: white;
-            padding: 1.5rem;
-            border-radius: 0.75rem;
-            border: 1px solid var(--neon-pink);
-            box-shadow: 0 0 10px var(--neon-pink);
+        /* The Sphere Container is the core of the motion effect */
+        .sphere-container {
+            width: 300px;
+            height: 300px;
+            perspective: 1000px;
+            margin-bottom: 2rem;
+        }
+        
+        /* The sphere itself, which rotates and responds to motion */
+        .sphere {
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            border-radius: 50%;
+            position: relative;
+            background: radial-gradient(circle at center, var(--sphere-start) 0%, var(--sphere-end) 100%);
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+            transition: transform 0.2s ease-out;
+        }
+        
+        /* The glow effect behind the sphere */
+        .sphere::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 150%;
+            height: 150%;
+            background: radial-gradient(circle, var(--glow-color) 0%, transparent 70%);
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            opacity: 0.8;
+            filter: blur(40px);
+        }
+
+        /* The pulsating glow on the button */
+        @keyframes pulse-glow {
+            0%, 100% {
+                box-shadow: 0 0 10px var(--gradient-end), 0 0 20px var(--gradient-end), 0 0 30px var(--gradient-end);
+            }
+            50% {
+                box-shadow: 0 0 15px var(--gradient-end), 0 0 25px var(--gradient-end), 0 0 35px var(--gradient-end);
+            }
+        }
+        
+        .glow-button {
+            animation: pulse-glow 2s infinite ease-in-out;
+        }
+
+        /* The particle system for the sphere */
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            animation: float 5s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) scale(1);
+            }
+            50% {
+                transform: translateY(-5px) scale(1.1);
+            }
         }
     </style>
 </head>
-<body class="h-screen w-screen flex items-center justify-center">
+<body class="bg-gray-900 text-white flex flex-col items-center justify-center min-h-screen p-4">
 
-    <div class="pwa-container text-center max-w-lg mx-auto p-4">
-        <h1 id="title" class="text-white text-3xl md:text-5xl mb-8 leading-tight drop-shadow-lg">Motion Power Sphere</h1>
+    <!-- Main Container -->
+    <div class="flex flex-col items-center text-center max-w-lg mx-auto">
+        <h1 class="text-4xl sm:text-5xl font-extrabold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-600">
+            Motion Power Sphere
+        </h1>
+        <p class="text-lg sm:text-xl text-gray-300 mb-8">
+            This demo showcases a dynamic install prompt for a Progressive Web App, powered by a motion-sensitive orb.
+        </p>
 
-        <!-- The custom install button -->
-        <button id="installButton" class="futuristic-button rounded-xl hidden">
-            Play & Earn Now!
-        </button>
-
-        <!-- Status message area -->
-        <div id="statusMessage" class="status-message hidden mt-8">
-            <p id="statusText" class="text-white text-lg"></p>
+        <!-- Motion-sensitive Sphere -->
+        <div class="sphere-container">
+            <div class="sphere" id="sphere"></div>
         </div>
 
-        <!-- iOS Fallback Instructions -->
-        <div id="iosInstructions" class="ios-message hidden mt-8">
-            <h2 class="text-xl mb-4 text-neon-pink">Installation Instructions for iOS</h2>
-            <p class="text-sm text-gray-300">
-                This browser doesn't support automatic installation. To install, please tap the
-                <span class="font-bold text-lg text-white">Share button</span>
-                <span class="text-white">(<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 24 24"><path d="M19 8.25a.75.75 0 00-.75-.75h-2.5a.75.75 0 000 1.5h2.5c.414 0 .75.336.75.75v10.5c0 .414-.336.75-.75.75H5.75a.75.75 0 01-.75-.75v-10.5c0-.414.336-.75.75-.75h2.5a.75.75 0 000-1.5h-2.5A2.25 2.25 0 003.5 10.75v10.5c0 1.243 1.007 2.25 2.25 2.25h12.5c1.243 0 2.25-1.007 2.25-2.25v-10.5A2.25 2.25 0 0019 8.25zM12 2.75a.75.75 0 00-.75.75v11.69l-2.22-2.22a.75.75 0 00-1.06 1.06l3.5 3.5c.32.32.742.479 1.16.479.418 0 .84-.159 1.16-.479l3.5-3.5a.75.75 0 00-1.06-1.06l-2.22 2.22V3.5a.75.75 0 00-.75-.75z"/></svg>)</span>
-                icon at the bottom of your screen, then select
-                <span class="font-bold text-white text-lg">'Add to Home Screen'</span>.
-            </p>
+        <!-- Install Button - Initially hidden as per PWA best practice -->
+        <button id="installButton" 
+                class="hidden glow-button mt-4 px-8 py-3 rounded-full font-bold text-lg transition-transform duration-300 ease-in-out hover:scale-105"
+                style="background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));">
+            Install App
+        </button>
+
+        <!-- Message Box for simulating installation prompt -->
+        <div id="messageBox" class="hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-6 rounded-xl shadow-2xl z-50 transition-all duration-300 ease-in-out"
+             style="background: rgba(17, 24, 39, 0.9); backdrop-filter: blur(10px);">
+            <p class="text-lg font-bold mb-4">Simulated Install Prompt</p>
+            <p class="text-sm text-gray-300 mb-4">Would you like to install this amazing app?</p>
+            <div class="flex gap-4">
+                <button id="acceptBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full transition-colors duration-200">
+                    Accept
+                </button>
+                <button id="dismissBtn" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-full transition-colors duration-200">
+                    Dismiss
+                </button>
+            </div>
         </div>
     </div>
 
+    <!-- JavaScript for PWA simulation and motion effects -->
     <script>
-        // Check for iOS and handle accordingly
-        const isIOS = () => {
-            const userAgent = window.navigator.userAgent.toLowerCase();
-            return /iphone|ipad|ipod/.test(userAgent);
+        // --- Core PWA Simulation Logic ---
+        // We'll simulate the 'beforeinstallprompt' event immediately.
+        // In a real PWA, this event fires automatically when the browser is ready.
+        let deferredPrompt = {
+            prompt: async () => {
+                const messageBox = document.getElementById('messageBox');
+                messageBox.classList.remove('hidden');
+
+                return new Promise((resolve) => {
+                    const acceptBtn = document.getElementById('acceptBtn');
+                    const dismissBtn = document.getElementById('dismissBtn');
+                    
+                    const handleChoice = (outcome) => {
+                        messageBox.classList.add('hidden');
+                        resolve({ outcome });
+                        
+                        // Clean up listeners to prevent memory leaks
+                        acceptBtn.removeEventListener('click', acceptHandler);
+                        dismissBtn.removeEventListener('click', dismissHandler);
+                    };
+
+                    const acceptHandler = () => handleChoice('accepted');
+                    const dismissHandler = () => handleChoice('dismissed');
+
+                    acceptBtn.addEventListener('click', acceptHandler);
+                    dismissBtn.addEventListener('click', dismissHandler);
+                });
+            }
         };
 
-        const statusMessage = document.getElementById('statusMessage');
-        const statusText = document.getElementById('statusText');
+        // --- Motion and Audio Logic ---
+        const sphere = document.getElementById('sphere');
         const installButton = document.getElementById('installButton');
-        const iosInstructions = document.getElementById('iosInstructions');
-        let deferredPrompt = null;
+        const container = document.body;
 
-        // Function to play a synthesized click sound
-        const playClickSound = () => {
-            // Since we can't load external audio files, we'll use Tone.js to synthesize a sound.
-            // This ensures the full experience works in the preview environment.
-            const synth = new Tone.Synth({
-                oscillator: {
-                    type: "sine"
-                },
-                envelope: {
-                    attack: 0.001,
-                    decay: 0.1,
-                    sustain: 0.1,
-                    release: 0.05
-                }
-            }).toDestination();
-            synth.triggerAttackRelease("C5", "8n");
-        };
+        let hasInteracted = false;
+        
+        // Use a simple audio context for sound effects without external files
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-        // Event listener for the install prompt
-        window.addEventListener('beforeinstallprompt', (event) => {
-            // Prevent the browser's default install UI
-            event.preventDefault();
-            // Stash the event so we can trigger it later
-            deferredPrompt = event;
-            // Show our custom button if the app is installable
-            installButton.classList.remove('hidden');
-        });
+        // Function to create a simple beep sound
+        function playBeep() {
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
 
-        // Event listener for the button click
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(500, audioCtx.currentTime); // Frequency in Hz
+            gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+            gainNode.gain.linearRampToValueAtTime(0.5, audioCtx.currentTime + 0.05);
+            
+            oscillator.start();
+            
+            // Fade out the sound
+            gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.5);
+            oscillator.stop(audioCtx.currentTime + 0.5);
+        }
+
+        // Handle the button click event
         installButton.addEventListener('click', async () => {
-            playClickSound();
-
+            // Check if deferredPrompt is available
             if (deferredPrompt) {
-                // Show the install prompt
-                deferredPrompt.prompt();
+                // Play a confirmation sound
+                playBeep();
+                
+                // Show the simulated installation prompt and wait for user choice
+                const { outcome } = await deferredPrompt.prompt();
 
-                // Wait for the user to respond to the prompt
-                const { outcome } = await deferredPrompt.userChoice;
-                console.log(`User response to the install prompt: ${outcome}`);
-
-                // The prompt can only be used once, so we reset everything
+                if (outcome === 'accepted') {
+                    console.log('User accepted the PWA install prompt');
+                    // Hide the button and sphere, as the app is "installed"
+                    installButton.classList.add('hidden');
+                    sphere.parentElement.classList.add('hidden');
+                    alert('Installation Successful! The app is now on your device home screen. (Simulated)');
+                } else {
+                    console.log('User dismissed the PWA install prompt');
+                }
+                
+                // The prompt can only be used once, so we discard it
                 deferredPrompt = null;
-                installButton.classList.add('hidden');
+            } else {
+                alert('Install prompt not available. This is a simulation.');
             }
         });
 
-        // Event listener for when the app is installed
-        window.addEventListener('appinstalled', () => {
-            installButton.classList.add('hidden');
-            statusMessage.classList.remove('hidden');
-            statusText.textContent = 'Awesome! The PWA has been installed.';
-            // Hide the status message after a few seconds
-            setTimeout(() => {
-                statusMessage.classList.add('hidden');
-            }, 5000);
+        // Event listener for the "accept" button within the message box
+        document.getElementById('acceptBtn').addEventListener('click', () => {
+            console.log('User accepted the simulated prompt.');
         });
 
-        // On initial load, check if it's iOS and provide fallback instructions
-        window.onload = () => {
-            if (isIOS()) {
-                installButton.classList.add('hidden');
-                iosInstructions.classList.remove('hidden');
-            }
+        // Event listener for the "dismiss" button within the message box
+        document.getElementById('dismissBtn').addEventListener('click', () => {
+            console.log('User dismissed the simulated prompt.');
+        });
+
+        // Show the button immediately because we are simulating the prompt event
+        // In a real PWA, this would happen inside the 'beforeinstallprompt' listener.
+        installButton.classList.remove('hidden');
+
+        // --- Motion Effects ---
+        const handleOrientation = (event) => {
+            // Get beta and gamma angles from device motion
+            const beta = event.beta; // In degree in the range [-180,180]
+            const gamma = event.gamma; // In degree in the range [-90,90]
+
+            // Map the angles to rotation values for the sphere
+            const rotateX = beta;
+            const rotateY = gamma;
+            
+            sphere.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
         };
+
+        const handleMouseMove = (event) => {
+            // Get mouse position relative to the center of the viewport
+            const centerX = window.innerWidth / 2;
+            const centerY = window.innerHeight / 2;
+            const mouseX = event.clientX;
+            const mouseY = event.clientY;
+
+            // Calculate rotation based on how far the mouse is from the center
+            const rotateX = (mouseY - centerY) / 5;
+            const rotateY = (mouseX - centerX) / 5;
+            
+            sphere.style.transform = `rotateX(${-rotateX}deg) rotateY(${rotateY}deg)`;
+        };
+
+        // Add particles to the sphere
+        function createParticles() {
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // Set a random size for each particle
+                const size = Math.random() * 4 + 1;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+
+                // Set a random initial position within the sphere
+                const x = Math.random() * 100 - 50; // -50 to 50
+                const y = Math.random() * 100 - 50;
+                const z = Math.random() * 100 - 50;
+
+                particle.style.transform = `translate3d(${x}px, ${y}px, ${z}px)`;
+                
+                sphere.appendChild(particle);
+            }
+        }
+        createParticles();
+
+        // Check for device motion support (mobile)
+        if (window.DeviceOrientationEvent) {
+            window.addEventListener('deviceorientation', handleOrientation, true);
+        } else {
+            // Fallback to mouse movement (desktop)
+            container.addEventListener('mousemove', handleMouseMove);
+        }
+
     </script>
 </body>
 </html>
