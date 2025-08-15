@@ -1,379 +1,268 @@
-<!-- This is the updated index.html file. -->
-<!-- You will need to replace your current index.html with this file. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Motion Power Sphere</title>
-    <link rel="manifest" href="/manifest.json">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <title>Install Motion Power Sphere</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
-        /* Custom CSS for the button, sphere, and visuals */
-        :root {
-            --gradient-start: #3b82f6; /* Tailwind blue-500 */
-            --gradient-end: #60a5fa;   /* Tailwind blue-400 */
-            --glow-color: rgba(59, 130, 246, 0.7); /* Tailwind blue-500 with transparency */
-            --sphere-start: #1e40af; /* Tailwind blue-800 */
-            --sphere-end: #1c3374;   /* Darker blue for depth */
-        }
-        
         body {
             font-family: 'Inter', sans-serif;
-            background: radial-gradient(circle at center, #111827 0%, #000000 100%);
-            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            background-color: #0d1117;
+            color: #c9d1d9;
+            overflow: hidden;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            color: white;
-            padding: 1rem;
-            overflow: hidden;
-            position: relative;
+            height: 100vh;
         }
-
-        .sphere-container {
-            width: 300px;
-            height: 300px;
-            perspective: 1000px;
-            margin-bottom: 2rem;
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            z-index: 10;
+            max-width: 90%;
         }
-        
-        .sphere {
-            width: 100%;
-            height: 100%;
-            transform-style: preserve-3d;
-            border-radius: 50%;
-            position: relative;
-            background: radial-gradient(circle at center, var(--sphere-start) 0%, var(--sphere-end) 100%);
-            box-shadow: 0 0 50px rgba(0,0,0,0.5);
-            transition: transform 0.2s ease-out;
-        }
-        
-        .sphere::after {
-            content: '';
+        canvas {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 150%;
-            height: 150%;
-            background: radial-gradient(circle, var(--glow-color) 0%, transparent 70%);
-            transform: translate(-50%, -50%);
-            border-radius: 50%;
-            opacity: 0.8;
-            filter: blur(40px);
-        }
-
-        @keyframes pulse-glow {
-            0%, 100% {
-                box-shadow: 0 0 10px var(--gradient-end), 0 0 20px var(--gradient-end), 0 0 30px var(--gradient-end);
-            }
-            50% {
-                box-shadow: 0 0 15px var(--gradient-end), 0 0 25px var(--gradient-end), 0 0 35px var(--gradient-end);
-            }
-        }
-        
-        .glow-button {
-            animation: pulse-glow 2s infinite ease-in-out;
-        }
-
-        .particle {
-            position: absolute;
-            background: rgba(255, 255, 255, 0.5);
-            border-radius: 50%;
-            animation: float 5s infinite ease-in-out;
-        }
-
-        @keyframes float {
-            0%, 100% {
-                transform: translateY(0) scale(1);
-            }
-            50% {
-                transform: translateY(-5px) scale(1.1);
-            }
-        }
-
-        /* Modal styling */
-        .modal-overlay {
-            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.75);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
+            z-index: 1;
         }
-        .modal-content {
-            background-color: #1f2937;
+        .content {
+            z-index: 20;
+            background: rgba(13, 17, 23, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             padding: 2rem;
             border-radius: 1rem;
-            max-width: 90%;
-            text-align: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            position: relative;
+            border: 1px solid rgba(48, 54, 61, 0.5);
+            margin-top: 1rem;
+            max-width: 500px;
         }
-        .modal-close {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: #d1d5db;
+        #installButton {
+            transition: all 0.3s ease-in-out;
+            border: 2px solid transparent;
+        }
+        #installButton:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(48, 54, 61, 0.4);
+            border: 2px solid #58a6ff;
+        }
+        .message-box {
+            background: #21262d;
+            border: 1px solid #30363d;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-top: 1rem;
+            max-width: 400px;
+            text-align: left;
+            word-wrap: break-word;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        .message-box.show {
+            opacity: 1;
+            transform: translateY(0);
         }
     </style>
 </head>
-<body class="bg-gray-900 text-white flex flex-col items-center justify-center min-h-screen p-4">
+<body>
 
-    <!-- Main Container -->
-    <div class="flex flex-col items-center text-center max-w-lg mx-auto">
-        <h1 class="text-4xl sm:text-5xl font-extrabold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-600">
-            Motion Power Sphere
-        </h1>
-        <p class="text-lg sm:text-xl text-gray-300 mb-8">
-            This PWA is installable! Experience the interactive sphere and a simulated withdrawal.
-        </p>
-
-        <!-- Motion-sensitive Sphere -->
-        <div class="sphere-container">
-            <div class="sphere" id="sphere"></div>
-        </div>
-
-        <!-- Install Button and Withdrawal Button -->
-        <div class="flex flex-col sm:flex-row gap-4 mt-4 w-full justify-center">
-            <button id="installButton" 
-                    class="hidden glow-button px-8 py-3 rounded-full font-bold text-lg transition-transform duration-300 ease-in-out hover:scale-105"
-                    style="background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));">
+    <div class="container">
+        <div class="content flex flex-col items-center">
+            <h1 class="text-4xl sm:text-5xl font-bold mb-4">Motion Power Sphere</h1>
+            <p class="text-lg sm:text-xl text-gray-400 mb-6">Experience the dynamic sphere of motion. Install the app for a full-screen experience and offline access.</p>
+            <button id="installButton" class="bg-blue-600 text-white font-bold py-3 px-6 rounded-full text-lg shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
                 Install App
             </button>
-            <button id="withdrawalButton" 
-                    class="px-8 py-3 rounded-full font-bold text-lg text-white transition-colors duration-300 ease-in-out"
-                    style="background: #ef4444; border: 2px solid #dc2626;">
-                Simulate Withdrawal
-            </button>
+            <div id="messageBox" class="message-box"></div>
         </div>
     </div>
 
-    <!-- Modal for Installation Prompt -->
-    <div id="installModal" class="modal-overlay hidden">
-        <div class="modal-content">
-            <button id="closeInstallModal" class="modal-close">&times;</button>
-            <p class="text-xl font-bold mb-4">Install App?</p>
-            <p class="text-md text-gray-300 mb-6">This will add the app to your home screen for a seamless experience.</p>
-            <div class="flex justify-center gap-4">
-                <button id="acceptBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full transition-colors duration-200">
-                    Accept
-                </button>
-                <button id="dismissBtn" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-full transition-colors duration-200">
-                    Dismiss
-                </button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Modal for Withdrawal Simulation -->
-    <div id="withdrawalModal" class="modal-overlay hidden">
-        <div class="modal-content">
-            <button id="closeWithdrawalModal" class="modal-close">&times;</button>
-            <h2 class="text-xl font-bold mb-4">Withdrawal Process</h2>
-            <img src="https://tiffyai.github.io/Offline-/withdrawal.gif" alt="Withdrawal Simulation" class="rounded-lg w-full max-w-sm mx-auto mb-4" />
-            <p class="text-md text-gray-300">The withdrawal process is now being simulated. Please wait...</p>
-        </div>
-    </div>
-
-    <!-- App Logic and Motion Effects -->
+    <!-- PWA Manifest & Service Worker Script -->
     <script>
-        // Register the Service Worker.
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
-                    .then((registration) => {
-                        console.log('Service Worker registered with scope:', registration.scope);
-                    })
-                    .catch((err) => {
-                        console.log('Service Worker registration failed:', err);
-                    });
+        // Inline Manifest JSON
+        const manifest = {
+            name: "Motion Power Sphere",
+            short_name: "Sphere",
+            description: "A dynamic sphere of motion.",
+            start_url: "/",
+            display: "standalone",
+            background_color: "#0d1117",
+            theme_color: "#161b22",
+            icons: [
+                { src: "https://placehold.co/192x192/0d1117/ffffff?text=Sphere", sizes: "192x192", type: "image/png" },
+                { src: "https://placehold.co/512x512/0d1117/ffffff?text=Sphere", sizes: "512x512", type: "image/png" }
+            ]
+        };
+
+        // Create a link tag for the manifest
+        const linkEl = document.createElement('link');
+        linkEl.rel = 'manifest';
+        linkEl.href = 'data:application/json;base64,' + btoa(JSON.stringify(manifest));
+        document.head.appendChild(linkEl);
+
+        // --- Three.js Sphere Animation ---
+        let scene, camera, renderer, sphere, controls;
+        let ambientLight, directionalLight;
+
+        function init3D() {
+            // Scene
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x0d1117);
+
+            // Camera
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 2.5;
+
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.body.insertBefore(renderer.domElement, document.body.firstChild);
+
+            // Sphere
+            const geometry = new THREE.IcosahedronGeometry(1, 1);
+            const material = new THREE.MeshPhongMaterial({
+                color: 0x58a6ff,
+                shininess: 30,
+                specular: 0xffffff,
+                flatShading: true
             });
+            sphere = new THREE.Mesh(geometry, material);
+            scene.add(sphere);
+
+            // Lighting
+            ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
+            scene.add(ambientLight);
+            directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
+            directionalLight.position.set(5, 5, 5).normalize();
+            scene.add(directionalLight);
+
+            // Handle mouse/touch movement for tilt effect
+            let mouseX = 0;
+            let mouseY = 0;
+
+            document.addEventListener('mousemove', (event) => {
+                mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+                mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+            });
+            document.addEventListener('touchmove', (event) => {
+                if (event.touches.length > 0) {
+                    mouseX = (event.touches[0].clientX / window.innerWidth) * 2 - 1;
+                    mouseY = -(event.touches[0].clientY / window.innerHeight) * 2 + 1;
+                }
+            });
+
+            // Handle window resize
+            window.addEventListener('resize', onWindowResize, false);
         }
-        
-        // --- Core PWA Logic and UI Event Handling ---
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            // Dynamic tilting based on mouse/touch position
+            sphere.rotation.x += (mouseY * 0.05 - sphere.rotation.x) * 0.05;
+            sphere.rotation.y += (mouseX * 0.05 - sphere.rotation.y) * 0.05;
+            renderer.render(scene, camera);
+        }
+
+        window.onload = function() {
+            init3D();
+            animate();
+        };
+
+        // --- PWA Installation Logic ---
         let deferredPrompt;
         const installButton = document.getElementById('installButton');
-        const installModal = document.getElementById('installModal');
-        const acceptBtn = document.getElementById('acceptBtn');
-        const dismissBtn = document.getElementById('dismissBtn');
-        const withdrawalButton = document.getElementById('withdrawalButton');
-        const withdrawalModal = document.getElementById('withdrawalModal');
+        const messageBox = document.getElementById('messageBox');
 
-        // Listen for the 'beforeinstallprompt' event. This is the key to PWA installation.
+        // Function to show a message in the message box
+        function showMessage(text, isError = false) {
+            messageBox.textContent = text;
+            messageBox.style.backgroundColor = isError ? '#631c1c' : '#21262d';
+            messageBox.style.borderColor = isError ? '#f85149' : '#30363d';
+            messageBox.classList.add('show');
+        }
+
         window.addEventListener('beforeinstallprompt', (e) => {
-            // Prevent the browser's default install prompt from showing
+            // Prevents the default browser install prompt
             e.preventDefault();
-            // Stash the event so we can use it later to trigger the prompt
+            // Stash the event so it can be triggered later.
             deferredPrompt = e;
-            // Show our custom install button
-            installButton.classList.remove('hidden');
-            console.log("'beforeinstallprompt' event was fired.");
+            // The button should be visible if the event fires
+            installButton.style.display = 'block';
+            console.log('beforeinstallprompt fired');
         });
 
-        // Handle the custom install button click
         installButton.addEventListener('click', async () => {
             if (deferredPrompt) {
-                // Show our custom modal instead of the browser's prompt
-                installModal.classList.remove('hidden');
-                
-                // We'll wait for a choice from our modal
-                const { outcome } = await new Promise((resolve) => {
-                    const handleChoice = (result) => {
-                        installModal.classList.add('hidden');
-                        resolve({ outcome: result });
-                    };
-                    acceptBtn.onclick = () => handleChoice('accepted');
-                    dismissBtn.onclick = () => handleChoice('dismissed');
-                    document.getElementById('closeInstallModal').onclick = () => handleChoice('dismissed');
-                });
-                
+                // Show the install prompt
+                deferredPrompt.prompt();
+                // Wait for the user to respond to the prompt
+                const { outcome } = await deferredPrompt.userChoice;
                 if (outcome === 'accepted') {
-                    // Call the browser's prompt using the deferred event
-                    deferredPrompt.prompt();
-                    // Wait for the user to respond to the prompt (after our modal closes)
-                    const { userChoice } = await deferredPrompt.userChoice;
-                    console.log(`User response to the install prompt: ${userChoice.outcome}`);
-                    if (userChoice.outcome === 'accepted') {
-                        installButton.classList.add('hidden');
-                        // Use a simple alert, as this is the best way to give feedback without blocking the UI
-                        alert('App installed! You can now use it from your home screen.');
-                    }
+                    showMessage('The app was installed successfully!');
+                } else {
+                    showMessage('Installation was dismissed.');
                 }
+                // We no longer need the prompt, so clear it
                 deferredPrompt = null;
+            } else {
+                showMessage('The app is already installed or cannot be installed.', true);
             }
         });
 
-        // Listen for the 'appinstalled' event to hide the button
-        window.addEventListener('appinstalled', () => {
-            installButton.classList.add('hidden');
-            console.log('PWA was installed');
-        });
-
-        // Handle the withdrawal button click
-        withdrawalButton.addEventListener('click', () => {
-            withdrawalModal.classList.remove('hidden');
-        });
-
-        // Close withdrawal modal
-        document.getElementById('closeWithdrawalModal').addEventListener('click', () => {
-            withdrawalModal.classList.add('hidden');
-        });
-
-        // --- Motion Effects ---
-        const sphere = document.getElementById('sphere');
-        const container = document.body;
-
-        function handleOrientation(event) {
-            const beta = event.beta;
-            const gamma = event.gamma;
-            const rotateX = beta;
-            const rotateY = gamma;
-            sphere.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-        }
-
-        function handleMouseMove(event) {
-            const centerX = window.innerWidth / 2;
-            const centerY = window.innerHeight / 2;
-            const mouseX = event.clientX;
-            const mouseY = event.clientY;
-            const rotateX = (mouseY - centerY) / 5;
-            const rotateY = (mouseX - centerX) / 5;
-            sphere.style.transform = `rotateX(${-rotateX}deg) rotateY(${rotateY}deg)`;
-        }
-
-        function createParticles() {
-            for (let i = 0; i < 50; i++) {
-                const particle = document.createElement('div');
-                particle.classList.add('particle');
-                const size = Math.random() * 4 + 1;
-                particle.style.width = `${size}px`;
-                particle.style.height = `${size}px`;
-                const x = Math.random() * 100 - 50;
-                const y = Math.random() * 100 - 50;
-                const z = Math.random() * 100 - 50;
-                particle.style.transform = `translate3d(${x}px, ${y}px, ${z}px)`;
-                sphere.appendChild(particle);
-            }
-        }
-        createParticles();
-
-        // Check for device motion support (mobile)
-        if (window.DeviceOrientationEvent) {
-            window.addEventListener('deviceorientation', handleOrientation, true);
-        } else {
-            // Fallback to mouse movement (desktop)
-            container.addEventListener('mousemove', handleMouseMove);
-        }
-    </script>
-</body>
-</html>
-```{json}
-<!-- This is the manifest.json file. -->
-<!-- You should save this as manifest.json in the root of your project. -->
-{
-    "name": "Motion Power Sphere",
-    "short_name": "MP Sphere",
-    "start_url": "/Motion-Power-Sphere/",
-    "display": "standalone",
-    "background_color": "#000000",
-    "theme_color": "#1c3374",
-    "icons": [
-        {
-            "src": "[https://tiffyai.github.io/Install/images/192.png](https://tiffyai.github.io/Install/images/192.png)",
-            "sizes": "192x192",
-            "type": "image/png"
-        },
-        {
-            "src": "[https://tiffyai.github.io/Install/images/512.png](https://tiffyai.github.io/Install/images/512.png)",
-            "sizes": "512x512",
-            "type": "image/png"
-        }
-    ]
-}
-```{javascript}
-// This is the sw.js (service worker) file.
-// You should save this as sw.js in the root of your project.
-const CACHE_NAME = 'pwa-motion-sphere-v1';
-const urlsToCache = [
-    '/Motion-Power-Sphere/',
-    '/Motion-Power-Sphere/index.html',
-    'https://cdn.tailwindcss.com',
-    'https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap',
-    'https://tiffyai.github.io/Offline-/withdrawal.gif'
-];
-
+        // Register the Service Worker (to allow offline functionality)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                const swCode = `
 self.addEventListener('install', (event) => {
-    // Perform installation steps
     event.waitUntil(
-        caches.open(CACHE_NAME)
-            .then((cache) => {
-                console.log('Opened cache');
-                return cache.addAll(urlsToCache);
-            })
+        caches.open('motion-power-sphere-v1').then((cache) => {
+            return cache.addAll([
+                '/',
+                'index.html'
+            ]);
+        })
     );
+    self.skipWaiting();
 });
 
 self.addEventListener('fetch', (event) => {
     event.respondWith(
-        caches.match(event.request)
-            .then((response) => {
-                if (response) {
-                    return response;
-                }
-                return fetch(event.request);
-            })
+        caches.match(event.request).then((response) => {
+            return response || fetch(event.request);
+        })
     );
 });
+`;
+                const swBlob = new Blob([swCode], { type: 'application/javascript' });
+                const swUrl = URL.createObjectURL(swBlob);
+
+                navigator.serviceWorker.register(swUrl)
+                    .then((reg) => {
+                        console.log('Service Worker registered with scope:', reg.scope);
+                    })
+                    .catch((err) => {
+                        console.error('Service Worker registration failed:', err);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>
