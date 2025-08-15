@@ -2,7 +2,7 @@
   "name": "Motion Power Sphere",
   "short_name": "Sphere",
   "description": "Dynamic TiffyAI-powered sphere.",
-  "start_url": "/Motion-Power-Sphere/app/",
+  "start_url": "https://tiffyai.github.io/Motion-Power-Sphere/",
   "display": "standalone",
   "background_color": "#0d1117",
   "theme_color": "#161b22",
