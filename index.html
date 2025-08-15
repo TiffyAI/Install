@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Motion Power Sphere PWA</title>
+    <title>Motion Power Sphere</title>
+    <link rel="manifest" href="/manifest.json">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
@@ -32,7 +33,6 @@
             position: relative;
         }
 
-        /* The Sphere Container is the core of the motion effect */
         .sphere-container {
             width: 300px;
             height: 300px;
@@ -40,7 +40,6 @@
             margin-bottom: 2rem;
         }
         
-        /* The sphere itself, which rotates and responds to motion */
         .sphere {
             width: 100%;
             height: 100%;
@@ -52,7 +51,6 @@
             transition: transform 0.2s ease-out;
         }
         
-        /* The glow effect behind the sphere */
         .sphere::after {
             content: '';
             position: absolute;
@@ -67,7 +65,6 @@
             filter: blur(40px);
         }
 
-        /* The pulsating glow on the button */
         @keyframes pulse-glow {
             0%, 100% {
                 box-shadow: 0 0 10px var(--gradient-end), 0 0 20px var(--gradient-end), 0 0 30px var(--gradient-end);
@@ -81,7 +78,6 @@
             animation: pulse-glow 2s infinite ease-in-out;
         }
 
-        /* The particle system for the sphere */
         .particle {
             position: absolute;
             background: rgba(255, 255, 255, 0.5);
@@ -185,59 +181,17 @@
         <div class="modal-content">
             <button id="closeWithdrawalModal" class="modal-close">&times;</button>
             <h2 class="text-xl font-bold mb-4">Withdrawal Process</h2>
-            <img src="https://placehold.co/400x300/4a5568/ffffff?text=Withdrawal+Animation" alt="Withdrawal Simulation" class="rounded-lg w-full max-w-sm mx-auto mb-4" />
+            <img src="https://tiffyai.github.io/Offline-/withdrawal.gif" alt="Withdrawal Simulation" class="rounded-lg w-full max-w-sm mx-auto mb-4" />
             <p class="text-md text-gray-300">The withdrawal process is now being simulated. Please wait...</p>
         </div>
     </div>
 
-    <!-- PWA files for a real application -->
-    <!-- In a real project, these would be separate files: manifest.json and sw.js -->
-    
-    <!-- Inline manifest.json for demonstration -->
-    <link rel="manifest" href="data:application/json;base64,eyJpY29ucyI6W3sic2l6ZXMiOiIxOTJ4MTkyIiwidHlwZSI6ImltYWdlL3BuZyIsInNyYyI6Imh0dHBzOi8vdGlmZnlhaS5naXRodWIuaW8vSW5zdGFsbC9pbWFnZXMvMTkyLnBuZyJ9LHsic2l6ZXMiOiI1MTJ4NTEyIiwidHlwZSI6ImltYWdlL3BuZyIsInNyYyI6Imh0dHBzOi8vdGlmZnlhaS5naXRodWIuaW8vSW5zdGFsbC9pbWFnZXMvNTEyLnBuZyJ9XSwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJuYW1lIjoiTW90aW9uIFBvd2VyIFNwaGVyZSIsInNob3J0X25hbWUiOiJNUCBTcGhlcmUiLCJzdGFydF91cmwiOiIvSW5zdGFsbC8iLCJkZXNjcmlwdGlvbiI6IkEgUHJvZ3Jlc3NpdmUgV2ViIEFwcCBEZW1vIn0=">
-
-    <!-- Inline Service Worker JS -->
+    <!-- App Logic and Motion Effects -->
     <script>
-        // In a real project, this would be in a separate sw.js file
-        const swCode = `
-            const CACHE_NAME = 'pwa-motion-sphere-v1';
-            const urlsToCache = [
-                '/',
-                '/index.html',
-                'https://cdn.tailwindcss.com',
-                'https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap',
-                // Add other assets to cache here
-            ];
-
-            self.addEventListener('install', (event) => {
-                event.waitUntil(
-                    caches.open(CACHE_NAME)
-                        .then((cache) => {
-                            console.log('Opened cache');
-                            return cache.addAll(urlsToCache);
-                        })
-                );
-            });
-
-            self.addEventListener('fetch', (event) => {
-                event.respondWith(
-                    caches.match(event.request)
-                        .then((response) => {
-                            if (response) {
-                                return response;
-                            }
-                            return fetch(event.request);
-                        })
-                );
-            });
-        `;
-
-        // Register the Service Worker by creating a Blob from the code
+        // Register the Service Worker.
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                const swBlob = new Blob([swCode], { type: 'application/javascript' });
-                const swUrl = URL.createObjectURL(swBlob);
-                navigator.serviceWorker.register(swUrl)
+                navigator.serviceWorker.register('/sw.js')
                     .then((registration) => {
                         console.log('Service Worker registered with scope:', registration.scope);
                     })
@@ -246,10 +200,7 @@
                     });
             });
         }
-    </script>
-
-    <!-- App Logic and Motion Effects -->
-    <script>
+        
         // --- Core PWA Logic and UI Event Handling ---
         let deferredPrompt;
         const installButton = document.getElementById('installButton');
@@ -295,6 +246,7 @@
                     console.log(`User response to the install prompt: ${userChoice.outcome}`);
                     if (userChoice.outcome === 'accepted') {
                         installButton.classList.add('hidden');
+                        // Use a simple alert, as this is the best way to give feedback without blocking the UI
                         alert('App installed! You can now use it from your home screen.');
                     }
                 }
@@ -366,3 +318,60 @@
     </script>
 </body>
 </html>
+```{json}
+<!-- This is the manifest.json file. -->
+<!-- You should save this as manifest.json in the root of your project. -->
+{
+    "name": "Motion Power Sphere",
+    "short_name": "MP Sphere",
+    "start_url": "/Motion-Power-Sphere/",
+    "display": "standalone",
+    "background_color": "#000000",
+    "theme_color": "#1c3374",
+    "icons": [
+        {
+            "src": "[https://tiffyai.github.io/Install/images/192.png](https://tiffyai.github.io/Install/images/192.png)",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "[https://tiffyai.github.io/Install/images/512.png](https://tiffyai.github.io/Install/images/512.png)",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}
+```{javascript}
+// This is the sw.js (service worker) file.
+// You should save this as sw.js in the root of your project.
+const CACHE_NAME = 'pwa-motion-sphere-v1';
+const urlsToCache = [
+    '/Motion-Power-Sphere/',
+    '/Motion-Power-Sphere/index.html',
+    'https://cdn.tailwindcss.com',
+    'https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap',
+    'https://tiffyai.github.io/Offline-/withdrawal.gif'
+];
+
+self.addEventListener('install', (event) => {
+    // Perform installation steps
+    event.waitUntil(
+        caches.open(CACHE_NAME)
+            .then((cache) => {
+                console.log('Opened cache');
+                return cache.addAll(urlsToCache);
+            })
+    );
+});
+
+self.addEventListener('fetch', (event) => {
+    event.respondWith(
+        caches.match(event.request)
+            .then((response) => {
+                if (response) {
+                    return response;
+                }
+                return fetch(event.request);
+            })
+    );
+});
