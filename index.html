@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Motion Power Sphere</title>
+    <title>Motion Power Sphere PWA</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Custom CSS for the button and visual effects */
+        /* Custom CSS for the button, sphere, and visuals */
         :root {
             --gradient-start: #3b82f6; /* Tailwind blue-500 */
             --gradient-end: #60a5fa;   /* Tailwind blue-400 */
@@ -97,6 +97,39 @@
                 transform: translateY(-5px) scale(1.1);
             }
         }
+
+        /* Modal styling */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.75);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+        .modal-content {
+            background-color: #1f2937;
+            padding: 2rem;
+            border-radius: 1rem;
+            max-width: 90%;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            position: relative;
+        }
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #d1d5db;
+        }
     </style>
 </head>
 <body class="bg-gray-900 text-white flex flex-col items-center justify-center min-h-screen p-4">
@@ -107,7 +140,7 @@
             Motion Power Sphere
         </h1>
         <p class="text-lg sm:text-xl text-gray-300 mb-8">
-            This demo showcases a dynamic install prompt for a Progressive Web App, powered by a motion-sensitive orb.
+            This PWA is installable! Experience the interactive sphere and a simulated withdrawal.
         </p>
 
         <!-- Motion-sensitive Sphere -->
@@ -115,19 +148,28 @@
             <div class="sphere" id="sphere"></div>
         </div>
 
-        <!-- Install Button - Initially hidden as per PWA best practice -->
-        <button id="installButton" 
-                class="hidden glow-button mt-4 px-8 py-3 rounded-full font-bold text-lg transition-transform duration-300 ease-in-out hover:scale-105"
-                style="background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));">
-            Install App
-        </button>
+        <!-- Install Button and Withdrawal Button -->
+        <div class="flex flex-col sm:flex-row gap-4 mt-4 w-full justify-center">
+            <button id="installButton" 
+                    class="hidden glow-button px-8 py-3 rounded-full font-bold text-lg transition-transform duration-300 ease-in-out hover:scale-105"
+                    style="background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));">
+                Install App
+            </button>
+            <button id="withdrawalButton" 
+                    class="px-8 py-3 rounded-full font-bold text-lg text-white transition-colors duration-300 ease-in-out"
+                    style="background: #ef4444; border: 2px solid #dc2626;">
+                Simulate Withdrawal
+            </button>
+        </div>
+    </div>
 
-        <!-- Message Box for simulating installation prompt -->
-        <div id="messageBox" class="hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-6 rounded-xl shadow-2xl z-50 transition-all duration-300 ease-in-out"
-             style="background: rgba(17, 24, 39, 0.9); backdrop-filter: blur(10px);">
-            <p class="text-lg font-bold mb-4">Simulated Install Prompt</p>
-            <p class="text-sm text-gray-300 mb-4">Would you like to install this amazing app?</p>
-            <div class="flex gap-4">
+    <!-- Modal for Installation Prompt -->
+    <div id="installModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <button id="closeInstallModal" class="modal-close">&times;</button>
+            <p class="text-xl font-bold mb-4">Install App?</p>
+            <p class="text-md text-gray-300 mb-6">This will add the app to your home screen for a seamless experience.</p>
+            <div class="flex justify-center gap-4">
                 <button id="acceptBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full transition-colors duration-200">
                     Accept
                 </button>
@@ -137,155 +179,178 @@
             </div>
         </div>
     </div>
+    
+    <!-- Modal for Withdrawal Simulation -->
+    <div id="withdrawalModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <button id="closeWithdrawalModal" class="modal-close">&times;</button>
+            <h2 class="text-xl font-bold mb-4">Withdrawal Process</h2>
+            <img src="https://placehold.co/400x300/4a5568/ffffff?text=Withdrawal+Animation" alt="Withdrawal Simulation" class="rounded-lg w-full max-w-sm mx-auto mb-4" />
+            <p class="text-md text-gray-300">The withdrawal process is now being simulated. Please wait...</p>
+        </div>
+    </div>
 
-    <!-- JavaScript for PWA simulation and motion effects -->
+    <!-- PWA files for a real application -->
+    <!-- In a real project, these would be separate files: manifest.json and sw.js -->
+    
+    <!-- Inline manifest.json for demonstration -->
+    <link rel="manifest" href="data:application/json;base64,eyJpY29ucyI6W3sic2l6ZXMiOiIxOTJ4MTkyIiwidHlwZSI6ImltYWdlL3BuZyIsInNyYyI6Imh0dHBzOi8vdGlmZnlhaS5naXRodWIuaW8vSW5zdGFsbC9pbWFnZXMvMTkyLnBuZyJ9LHsic2l6ZXMiOiI1MTJ4NTEyIiwidHlwZSI6ImltYWdlL3BuZyIsInNyYyI6Imh0dHBzOi8vdGlmZnlhaS5naXRodWIuaW8vSW5zdGFsbC9pbWFnZXMvNTEyLnBuZyJ9XSwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJuYW1lIjoiTW90aW9uIFBvd2VyIFNwaGVyZSIsInNob3J0X25hbWUiOiJNUCBTcGhlcmUiLCJzdGFydF91cmwiOiIvSW5zdGFsbC8iLCJkZXNjcmlwdGlvbiI6IkEgUHJvZ3Jlc3NpdmUgV2ViIEFwcCBEZW1vIn0=">
+
+    <!-- Inline Service Worker JS -->
     <script>
-        // --- Core PWA Simulation Logic ---
-        // We'll simulate the 'beforeinstallprompt' event immediately.
-        // In a real PWA, this event fires automatically when the browser is ready.
-        let deferredPrompt = {
-            prompt: async () => {
-                const messageBox = document.getElementById('messageBox');
-                messageBox.classList.remove('hidden');
+        // In a real project, this would be in a separate sw.js file
+        const swCode = `
+            const CACHE_NAME = 'pwa-motion-sphere-v1';
+            const urlsToCache = [
+                '/',
+                '/index.html',
+                'https://cdn.tailwindcss.com',
+                'https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap',
+                // Add other assets to cache here
+            ];
 
-                return new Promise((resolve) => {
-                    const acceptBtn = document.getElementById('acceptBtn');
-                    const dismissBtn = document.getElementById('dismissBtn');
-                    
-                    const handleChoice = (outcome) => {
-                        messageBox.classList.add('hidden');
-                        resolve({ outcome });
-                        
-                        // Clean up listeners to prevent memory leaks
-                        acceptBtn.removeEventListener('click', acceptHandler);
-                        dismissBtn.removeEventListener('click', dismissHandler);
-                    };
+            self.addEventListener('install', (event) => {
+                event.waitUntil(
+                    caches.open(CACHE_NAME)
+                        .then((cache) => {
+                            console.log('Opened cache');
+                            return cache.addAll(urlsToCache);
+                        })
+                );
+            });
 
-                    const acceptHandler = () => handleChoice('accepted');
-                    const dismissHandler = () => handleChoice('dismissed');
+            self.addEventListener('fetch', (event) => {
+                event.respondWith(
+                    caches.match(event.request)
+                        .then((response) => {
+                            if (response) {
+                                return response;
+                            }
+                            return fetch(event.request);
+                        })
+                );
+            });
+        `;
 
-                    acceptBtn.addEventListener('click', acceptHandler);
-                    dismissBtn.addEventListener('click', dismissHandler);
-                });
-            }
-        };
-
-        // --- Motion and Audio Logic ---
-        const sphere = document.getElementById('sphere');
-        const installButton = document.getElementById('installButton');
-        const container = document.body;
-
-        let hasInteracted = false;
-        
-        // Use a simple audio context for sound effects without external files
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-        // Function to create a simple beep sound
-        function playBeep() {
-            const oscillator = audioCtx.createOscillator();
-            const gainNode = audioCtx.createGain();
-
-            oscillator.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-
-            oscillator.type = 'sine';
-            oscillator.frequency.setValueAtTime(500, audioCtx.currentTime); // Frequency in Hz
-            gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
-            gainNode.gain.linearRampToValueAtTime(0.5, audioCtx.currentTime + 0.05);
-            
-            oscillator.start();
-            
-            // Fade out the sound
-            gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.5);
-            oscillator.stop(audioCtx.currentTime + 0.5);
+        // Register the Service Worker by creating a Blob from the code
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                const swBlob = new Blob([swCode], { type: 'application/javascript' });
+                const swUrl = URL.createObjectURL(swBlob);
+                navigator.serviceWorker.register(swUrl)
+                    .then((registration) => {
+                        console.log('Service Worker registered with scope:', registration.scope);
+                    })
+                    .catch((err) => {
+                        console.log('Service Worker registration failed:', err);
+                    });
+            });
         }
+    </script>
 
-        // Handle the button click event
+    <!-- App Logic and Motion Effects -->
+    <script>
+        // --- Core PWA Logic and UI Event Handling ---
+        let deferredPrompt;
+        const installButton = document.getElementById('installButton');
+        const installModal = document.getElementById('installModal');
+        const acceptBtn = document.getElementById('acceptBtn');
+        const dismissBtn = document.getElementById('dismissBtn');
+        const withdrawalButton = document.getElementById('withdrawalButton');
+        const withdrawalModal = document.getElementById('withdrawalModal');
+
+        // Listen for the 'beforeinstallprompt' event. This is the key to PWA installation.
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Prevent the browser's default install prompt from showing
+            e.preventDefault();
+            // Stash the event so we can use it later to trigger the prompt
+            deferredPrompt = e;
+            // Show our custom install button
+            installButton.classList.remove('hidden');
+            console.log("'beforeinstallprompt' event was fired.");
+        });
+
+        // Handle the custom install button click
         installButton.addEventListener('click', async () => {
-            // Check if deferredPrompt is available
             if (deferredPrompt) {
-                // Play a confirmation sound
-                playBeep();
+                // Show our custom modal instead of the browser's prompt
+                installModal.classList.remove('hidden');
                 
-                // Show the simulated installation prompt and wait for user choice
-                const { outcome } = await deferredPrompt.prompt();
-
+                // We'll wait for a choice from our modal
+                const { outcome } = await new Promise((resolve) => {
+                    const handleChoice = (result) => {
+                        installModal.classList.add('hidden');
+                        resolve({ outcome: result });
+                    };
+                    acceptBtn.onclick = () => handleChoice('accepted');
+                    dismissBtn.onclick = () => handleChoice('dismissed');
+                    document.getElementById('closeInstallModal').onclick = () => handleChoice('dismissed');
+                });
+                
                 if (outcome === 'accepted') {
-                    console.log('User accepted the PWA install prompt');
-                    // Hide the button and sphere, as the app is "installed"
-                    installButton.classList.add('hidden');
-                    sphere.parentElement.classList.add('hidden');
-                    alert('Installation Successful! The app is now on your device home screen. (Simulated)');
-                } else {
-                    console.log('User dismissed the PWA install prompt');
+                    // Call the browser's prompt using the deferred event
+                    deferredPrompt.prompt();
+                    // Wait for the user to respond to the prompt (after our modal closes)
+                    const { userChoice } = await deferredPrompt.userChoice;
+                    console.log(`User response to the install prompt: ${userChoice.outcome}`);
+                    if (userChoice.outcome === 'accepted') {
+                        installButton.classList.add('hidden');
+                        alert('App installed! You can now use it from your home screen.');
+                    }
                 }
-                
-                // The prompt can only be used once, so we discard it
                 deferredPrompt = null;
-            } else {
-                alert('Install prompt not available. This is a simulation.');
             }
         });
 
-        // Event listener for the "accept" button within the message box
-        document.getElementById('acceptBtn').addEventListener('click', () => {
-            console.log('User accepted the simulated prompt.');
+        // Listen for the 'appinstalled' event to hide the button
+        window.addEventListener('appinstalled', () => {
+            installButton.classList.add('hidden');
+            console.log('PWA was installed');
         });
 
-        // Event listener for the "dismiss" button within the message box
-        document.getElementById('dismissBtn').addEventListener('click', () => {
-            console.log('User dismissed the simulated prompt.');
+        // Handle the withdrawal button click
+        withdrawalButton.addEventListener('click', () => {
+            withdrawalModal.classList.remove('hidden');
         });
 
-        // Show the button immediately because we are simulating the prompt event
-        // In a real PWA, this would happen inside the 'beforeinstallprompt' listener.
-        installButton.classList.remove('hidden');
+        // Close withdrawal modal
+        document.getElementById('closeWithdrawalModal').addEventListener('click', () => {
+            withdrawalModal.classList.add('hidden');
+        });
 
         // --- Motion Effects ---
-        const handleOrientation = (event) => {
-            // Get beta and gamma angles from device motion
-            const beta = event.beta; // In degree in the range [-180,180]
-            const gamma = event.gamma; // In degree in the range [-90,90]
+        const sphere = document.getElementById('sphere');
+        const container = document.body;
 
-            // Map the angles to rotation values for the sphere
+        function handleOrientation(event) {
+            const beta = event.beta;
+            const gamma = event.gamma;
             const rotateX = beta;
             const rotateY = gamma;
-            
             sphere.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-        };
+        }
 
-        const handleMouseMove = (event) => {
-            // Get mouse position relative to the center of the viewport
+        function handleMouseMove(event) {
             const centerX = window.innerWidth / 2;
             const centerY = window.innerHeight / 2;
             const mouseX = event.clientX;
             const mouseY = event.clientY;
-
-            // Calculate rotation based on how far the mouse is from the center
             const rotateX = (mouseY - centerY) / 5;
             const rotateY = (mouseX - centerX) / 5;
-            
             sphere.style.transform = `rotateX(${-rotateX}deg) rotateY(${rotateY}deg)`;
-        };
+        }
 
-        // Add particles to the sphere
         function createParticles() {
             for (let i = 0; i < 50; i++) {
                 const particle = document.createElement('div');
                 particle.classList.add('particle');
-                
-                // Set a random size for each particle
                 const size = Math.random() * 4 + 1;
                 particle.style.width = `${size}px`;
                 particle.style.height = `${size}px`;
-
-                // Set a random initial position within the sphere
-                const x = Math.random() * 100 - 50; // -50 to 50
+                const x = Math.random() * 100 - 50;
                 const y = Math.random() * 100 - 50;
                 const z = Math.random() * 100 - 50;
-
                 particle.style.transform = `translate3d(${x}px, ${y}px, ${z}px)`;
-                
                 sphere.appendChild(particle);
             }
         }
@@ -298,7 +363,6 @@
             // Fallback to mouse movement (desktop)
             container.addEventListener('mousemove', handleMouseMove);
         }
-
     </script>
 </body>
 </html>
