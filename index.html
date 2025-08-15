@@ -3,22 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Install Motion PowerSphere</title>
-<link rel="manifest" href="/app/manifest.json">
+<title>Motion Power Sphere</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#161b22">
 <style>
     body {
+        font-family: 'Inter', sans-serif;
         margin: 0;
         padding: 0;
         background-color: #0d1117;
-        font-family: 'Inter', sans-serif;
+        color: #c9d1d9;
         overflow: hidden;
         display: flex;
+        flex-direction: column;
         justify-content: center;
         align-items: center;
         height: 100vh;
-        color: #c9d1d9;
     }
     canvas {
         position: absolute;
@@ -26,19 +29,16 @@
         width: 100%; height: 100%;
         z-index: 1;
     }
-    .content {
+    .hud {
         z-index: 20;
-        background: rgba(13, 17, 23, 0.65);
+        background: rgba(13, 17, 23, 0.7);
         backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        padding: 2rem;
         border-radius: 1rem;
-        border: 1px solid rgba(88, 166, 255, 0.4);
-        max-width: 480px;
+        border: 1px solid rgba(48, 54, 61, 0.5);
+        padding: 1rem 2rem;
         text-align: center;
-        box-shadow: 0 0 25px rgba(88,166,255,0.3);
     }
-    #installButton {
+    .glass-btn {
         transition: all 0.3s ease;
         border: 2px solid rgba(88,166,255,0.7);
         background: rgba(13,17,23,0.4);
@@ -46,46 +46,32 @@
         font-weight: bold;
         text-shadow: 0 0 5px rgba(88,166,255,0.7);
         backdrop-filter: blur(8px);
+        padding: 0.75rem 1.5rem;
+        border-radius: 9999px;
+        font-size: 1.2rem;
     }
-    #installButton:hover {
+    .glass-btn:hover {
         transform: translateY(-2px) scale(1.02);
         box-shadow: 0 0 15px rgba(88,166,255,0.8);
-    }
-    .message-box {
-        background: #21262d;
-        border: 1px solid #30363d;
-        border-radius: 0.5rem;
-        padding: 1rem;
-        margin-top: 1rem;
-        opacity: 0;
-        transform: translateY(20px);
-        transition: opacity 0.5s ease, transform 0.5s ease;
-    }
-    .message-box.show {
-        opacity: 1;
-        transform: translateY(0);
     }
 </style>
 </head>
 <body>
 
-<div class="content">
-    <h1 class="text-3xl font-bold mb-4">Motion PowerSphere</h1>
-    <p class="text-lg text-gray-400 mb-6">
-        Spin me. Tilt me. Make me dizzy. Then tap below to <strong>pop me on your Home Screen</strong> and jump straight into the game.
-    </p>
-    <button id="installButton" class="py-3 px-6 rounded-full text-lg">
-        🚀 Pop Me on Your Home Screen!
-    </button>
-    <div id="messageBox" class="message-box"></div>
+<div class="hud">
+    <h1 class="text-3xl font-bold mb-2">Welcome Back, Sphere Tamer 🪐</h1>
+    <p class="mb-4 text-gray-400">Tilt, tap, or drag me. I live for the attention.</p>
+    <button id="funButton" class="glass-btn">Make Me Spin Faster!</button>
 </div>
 
 <script>
+// Preload click sound
+const clickSound = new Audio('../click.wav');
+
+// 3D Sphere setup
 let mouseX = 0, mouseY = 0;
 let scene, camera, renderer, sphere;
-const clickSound = new Audio('click.wav');
 
-// 3D sphere setup
 function init3D() {
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0x0d1117);
@@ -100,14 +86,14 @@ function init3D() {
     const geometry = new THREE.IcosahedronGeometry(1, 1);
     const material = new THREE.MeshPhongMaterial({
         color: 0x58a6ff,
-        shininess: 50,
+        shininess: 30,
         specular: 0xffffff,
         flatShading: true
     });
     sphere = new THREE.Mesh(geometry, material);
     scene.add(sphere);
 
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
     scene.add(ambientLight);
     const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
     directionalLight.position.set(5, 5, 5).normalize();
@@ -134,7 +120,7 @@ function init3D() {
         });
     }
 
-    window.addEventListener('resize', onWindowResize);
+    window.addEventListener('resize', onWindowResize, false);
 }
 
 function onWindowResize() {
@@ -153,46 +139,18 @@ function animate() {
 window.onload = () => {
     init3D();
     animate();
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./service-worker.js');
+    }
 };
 
-// Install button logic
-let deferredPrompt;
-const installButton = document.getElementById('installButton');
-const messageBox = document.getElementById('messageBox');
-
-function showMessage(text) {
-    messageBox.textContent = text;
-    messageBox.classList.add('show');
-}
-
-window.addEventListener('beforeinstallprompt', e => {
-    e.preventDefault();
-    deferredPrompt = e;
-    installButton.style.display = 'inline-block';
-});
-
-installButton.addEventListener('click', async () => {
+// Button click fun
+document.getElementById('funButton').addEventListener('click', () => {
     clickSound.play();
-    if (deferredPrompt) {
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-        if (outcome === 'accepted') {
-            showMessage('🎯 Boom! Your sphere is now vibin’ on your Home Screen.');
-        } else {
-            showMessage('😏 Playing hard to get? Try me later.');
-        }
-        deferredPrompt = null;
-    } else {
-        showMessage('🤖 Already chillin’ on your Home Screen.');
-    }
+    sphere.rotation.x += 0.5;
+    sphere.rotation.y += 0.5;
+    alert("Woo! You gave me a turbo boost 💨");
 });
-
-// Installer’s service worker
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/service-worker.js')
-        .then(reg => console.log('Installer SW registered:', reg.scope))
-        .catch(err => console.error('Installer SW failed:', err));
-}
 </script>
 
 </body>
