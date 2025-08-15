@@ -1,0 +1,21 @@
+{
+  "name": "Motion PowerSphere Installer",
+  "short_name": "MPS Installer",
+  "start_url": "/app/",
+  "display": "standalone",
+  "background_color": "#0d1117",
+  "theme_color": "#161b22",
+  "description": "Install Motion PowerSphere — the sphere that vibes with your moves.",
+  "icons": [
+    {
+      "src": "/app/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/app/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
