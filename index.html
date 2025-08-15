@@ -1,221 +1,223 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Install Motion Power Sphere</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #0d1117;
-            color: #c9d1d9;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-        .container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            z-index: 10;
-            max-width: 90%;
-        }
-        canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-        }
-        .content {
-            z-index: 20;
-            background: rgba(13, 17, 23, 0.7);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            padding: 2rem;
-            border-radius: 1rem;
-            border: 1px solid rgba(48, 54, 61, 0.5);
-            margin-top: 1rem;
-            max-width: 500px;
-        }
-        #installButton {
-            transition: all 0.3s ease-in-out;
-            border: 2px solid transparent;
-        }
-        #installButton:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(48, 54, 61, 0.4);
-            border: 2px solid #58a6ff;
-        }
-        .message-box {
-            background: #21262d;
-            border: 1px solid #30363d;
-            border-radius: 0.5rem;
-            padding: 1rem;
-            margin-top: 1rem;
-            max-width: 400px;
-            text-align: left;
-            word-wrap: break-word;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.5s ease, transform 0.5s ease;
-        }
-        .message-box.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Motion Power Sphere</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+    body {
+        font-family: 'Inter', sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #0d1117;
+        color: #c9d1d9;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+    canvas {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        z-index: 1;
+    }
+    .content {
+        z-index: 20;
+        background: rgba(13, 17, 23, 0.7);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        padding: 2rem;
+        border-radius: 1rem;
+        border: 1px solid rgba(48, 54, 61, 0.5);
+        max-width: 500px;
+        text-align: center;
+    }
+    #installButton {
+        transition: all 0.3s ease;
+        border: 2px solid rgba(88,166,255,0.7);
+        background: rgba(13,17,23,0.4);
+        color: #58a6ff;
+        font-weight: bold;
+        text-shadow: 0 0 5px rgba(88,166,255,0.7);
+        backdrop-filter: blur(8px);
+    }
+    #installButton:hover {
+        transform: translateY(-2px) scale(1.02);
+        box-shadow: 0 0 15px rgba(88,166,255,0.8);
+    }
+    .message-box {
+        background: #21262d;
+        border: 1px solid #30363d;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        margin-top: 1rem;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .message-box.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+</style>
 </head>
 <body>
 
-    <div class="container">
-        <div class="content flex flex-col items-center">
-            <h1 class="text-4xl sm:text-5xl font-bold mb-4">Motion Power Sphere</h1>
-            <p class="text-lg sm:text-xl text-gray-400 mb-6">
-                Experience the dynamic Motion Power Sphere. Pop this awesome earning experience on your Home Screen for a full-screen experience and offline access to earning valuable TIFFY tokens.
-            </p>
-            <button id="installButton" class="bg-blue-600 text-white font-bold py-3 px-6 rounded-full text-lg shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
-                Play Now
-            </button>
-            <div id="messageBox" class="message-box"></div>
-        </div>
-    </div>
+<div class="content">
+    <h1 class="text-4xl font-bold mb-4">Motion Power Sphere</h1>
+    <p class="text-lg text-gray-400 mb-6">
+        The sphere that vibes with your moves. Pop me on your Home Screen — give me a spin and watch me shine while stacking those TIFFY tokens. 
+    </p>
+    <button id="installButton" class="py-3 px-6 rounded-full text-lg">
+        Pop Me on Your Home Screen!
+    </button>
+    <div id="messageBox" class="message-box"></div>
+</div>
 
-    <script>
-        // --- FIXED: Manifest JSON ---
-        const manifest = {
-            name: "Motion Power Sphere",
-            short_name: "Sphere",
-            description: "A dynamic sphere of motion.",
-            start_url: "/Motion-Power-Sphere/",
-            display: "standalone",
-            background_color: "#0d1117",
-            theme_color: "#161b22",
-            icons: [
-                { src: "https://tiffyai.github.io/Blue-Key-Claim/TiffyAI-Token.png", sizes: "192x192", type: "image/png" },
-                { src: "https://tiffyai.github.io/Blue-Key-Claim/TiffyAI-Token.png", sizes: "512x512", type: "image/png" }
-            ]
-        };
-        const linkEl = document.createElement('link');
-        linkEl.rel = 'manifest';
-        linkEl.href = 'data:application/json;base64,' + btoa(JSON.stringify(manifest));
-        document.head.appendChild(linkEl);
+<script>
+let mouseX = 0, mouseY = 0;
+let scene, camera, renderer, sphere;
 
-        // --- Sphere Animation ---
-        let scene, camera, renderer, sphere;
-        let ambientLight, directionalLight;
-        let mouseX = 0, mouseY = 0; // FIXED: moved global
+// Preload click sound
+const clickSound = new Audio('click.wav');
 
-        function init3D() {
-            scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x0d1117);
+// Manifest
+const manifest = {
+    name: "Motion Power Sphere",
+    short_name: "Sphere",
+    description: "Dynamic TiffyAI-powered sphere.",
+    start_url: "/Motion-Power-Sphere/",
+    display: "standalone",
+    background_color: "#0d1117",
+    theme_color: "#161b22",
+    icons: [
+        { src: "https://tiffyai.github.io/Blue-Key-Claim/TiffyAI-Token.png", sizes: "192x192", type: "image/png" },
+        { src: "https://tiffyai.github.io/Blue-Key-Claim/TiffyAI-Token.png", sizes: "512x512", type: "image/png" }
+    ]
+};
+const linkEl = document.createElement('link');
+linkEl.rel = 'manifest';
+linkEl.href = 'data:application/json;base64,' + btoa(JSON.stringify(manifest));
+document.head.appendChild(linkEl);
 
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.z = 2.5;
+// Init 3D sphere
+function init3D() {
+    scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x0d1117);
 
-            renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            document.body.insertBefore(renderer.domElement, document.body.firstChild);
+    camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+    camera.position.z = 2.5;
 
-            const geometry = new THREE.IcosahedronGeometry(1, 1);
-            const material = new THREE.MeshPhongMaterial({
-                color: 0x58a6ff,
-                shininess: 30,
-                specular: 0xffffff,
-                flatShading: true
-            });
-            sphere = new THREE.Mesh(geometry, material);
-            scene.add(sphere);
+    renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.insertBefore(renderer.domElement, document.body.firstChild);
 
-            ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
-            scene.add(ambientLight);
-            directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
-            directionalLight.position.set(5, 5, 5).normalize();
-            scene.add(directionalLight);
+    const geometry = new THREE.IcosahedronGeometry(1, 1);
+    const material = new THREE.MeshPhongMaterial({
+        color: 0x58a6ff,
+        shininess: 30,
+        specular: 0xffffff,
+        flatShading: true
+    });
+    sphere = new THREE.Mesh(geometry, material);
+    scene.add(sphere);
 
-            document.addEventListener('mousemove', (event) => {
-                mouseX = (event.clientX / window.innerWidth) * 2 - 1;
-                mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
-            });
-            document.addEventListener('touchmove', (event) => {
-                if (event.touches.length > 0) {
-                    mouseX = (event.touches[0].clientX / window.innerWidth) * 2 - 1;
-                    mouseY = -(event.touches[0].clientY / window.innerHeight) * 2 + 1;
-                }
-            });
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
+    scene.add(ambientLight);
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
+    directionalLight.position.set(5, 5, 5).normalize();
+    scene.add(directionalLight);
 
-            window.addEventListener('resize', onWindowResize, false);
+    // Mouse move
+    document.addEventListener('mousemove', e => {
+        mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+        mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
+    });
+
+    // Touch move
+    document.addEventListener('touchmove', e => {
+        if (e.touches.length > 0) {
+            mouseX = (e.touches[0].clientX / window.innerWidth) * 2 - 1;
+            mouseY = -(e.touches[0].clientY / window.innerHeight) * 2 + 1;
         }
+    });
 
-        function onWindowResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        }
-
-        function animate() {
-            requestAnimationFrame(animate);
-            sphere.rotation.x += (mouseY * 0.5 - sphere.rotation.x) * 0.05;
-            sphere.rotation.y += (mouseX * 0.5 - sphere.rotation.y) * 0.05;
-            renderer.render(scene, camera);
-        }
-
-        window.onload = function() {
-            init3D();
-            animate();
-        };
-
-        // --- PWA Install Logic ---
-        let deferredPrompt;
-        const installButton = document.getElementById('installButton');
-        const messageBox = document.getElementById('messageBox');
-
-        function showMessage(text, isError = false) {
-            messageBox.textContent = text;
-            messageBox.style.backgroundColor = isError ? '#631c1c' : '#21262d';
-            messageBox.style.borderColor = isError ? '#f85149' : '#30363d';
-            messageBox.classList.add('show');
-        }
-
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            installButton.style.display = 'block';
-            console.log('beforeinstallprompt fired');
-        });
-
-        installButton.addEventListener('click', async () => {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') {
-                    showMessage('The app was installed successfully!');
-                } else {
-                    showMessage('Installation was dismissed.');
-                }
-                deferredPrompt = null;
-            } else {
-                showMessage('The app is already installed or cannot be installed.', true);
+    // Device tilt
+    if (window.DeviceOrientationEvent) {
+        window.addEventListener('deviceorientation', e => {
+            if (e.gamma && e.beta) {
+                mouseX = e.gamma / 45; // left/right tilt
+                mouseY = e.beta / 45;  // front/back tilt
             }
         });
+    }
 
-        // --- Service Worker ---
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                const swCode = `
-self.addEventListener('install', (event) => {
-    event.waitUntil(
-        caches.open('motion-power-sphere-v1').then((cache) => {
+    window.addEventListener('resize', onWindowResize, false);
+}
+
+function onWindowResize() {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
+function animate() {
+    requestAnimationFrame(animate);
+    sphere.rotation.x += (mouseY * 0.5 - sphere.rotation.x) * 0.05;
+    sphere.rotation.y += (mouseX * 0.5 - sphere.rotation.y) * 0.05;
+    renderer.render(scene, camera);
+}
+
+window.onload = () => {
+    init3D();
+    animate();
+};
+
+// PWA Install Logic
+let deferredPrompt;
+const installButton = document.getElementById('installButton');
+const messageBox = document.getElementById('messageBox');
+
+function showMessage(text) {
+    messageBox.textContent = text;
+    messageBox.classList.add('show');
+}
+
+window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    deferredPrompt = e;
+    installButton.style.display = 'block';
+});
+
+installButton.addEventListener('click', async () => {
+    clickSound.play();
+    if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+            showMessage('🚀 Locked & loaded! Your sphere is now chillin’ on your Home Screen.');
+        } else {
+            showMessage('😏 You blinked. Try again when you’re ready.');
+        }
+        deferredPrompt = null;
+    } else {
+        showMessage('🤖 Already hanging out on your Home Screen.');
+    }
+});
+
+// Service Worker
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        const swCode = `
+self.addEventListener('install', e => {
+    e.waitUntil(
+        caches.open('motion-power-sphere-v1').then(cache => {
             return cache.addAll([
                 '/Motion-Power-Sphere/',
                 '/Motion-Power-Sphere/index.html'
@@ -224,25 +226,19 @@ self.addEventListener('install', (event) => {
     );
     self.skipWaiting();
 });
-self.addEventListener('fetch', (event) => {
-    event.respondWith(
-        caches.match(event.request).then((response) => {
-            return response || fetch(event.request);
-        })
+self.addEventListener('fetch', e => {
+    e.respondWith(
+        caches.match(e.request).then(res => res || fetch(e.request))
     );
 });
 `;
-                const swBlob = new Blob([swCode], { type: 'application/javascript' });
-                const swUrl = URL.createObjectURL(swBlob);
-                navigator.serviceWorker.register(swUrl)
-                    .then((reg) => {
-                        console.log('Service Worker registered with scope:', reg.scope);
-                    })
-                    .catch((err) => {
-                        console.error('Service Worker registration failed:', err);
-                    });
-            });
-        }
-    </script>
+        const swBlob = new Blob([swCode], { type: 'application/javascript' });
+        const swUrl = URL.createObjectURL(swBlob);
+        navigator.serviceWorker.register(swUrl)
+            .then(reg => console.log('Service Worker registered:', reg.scope))
+            .catch(err => console.error('Service Worker failed:', err));
+    });
+}
+</script>
 </body>
 </html>
