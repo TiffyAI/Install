@@ -3,12 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Motion Power Sphere</title>
+<title>Motion Power Sphere Installer</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<link rel="manifest" href="./manifest.json">
-<meta name="theme-color" content="#161b22">
 <style>
     body {
         font-family: 'Inter', sans-serif;
@@ -29,16 +27,18 @@
         width: 100%; height: 100%;
         z-index: 1;
     }
-    .hud {
+    .content {
         z-index: 20;
         background: rgba(13, 17, 23, 0.7);
         backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        padding: 2rem;
         border-radius: 1rem;
         border: 1px solid rgba(48, 54, 61, 0.5);
-        padding: 1rem 2rem;
+        max-width: 500px;
         text-align: center;
     }
-    .glass-btn {
+    #installButton {
         transition: all 0.3s ease;
         border: 2px solid rgba(88,166,255,0.7);
         background: rgba(13,17,23,0.4);
@@ -46,32 +46,54 @@
         font-weight: bold;
         text-shadow: 0 0 5px rgba(88,166,255,0.7);
         backdrop-filter: blur(8px);
-        padding: 0.75rem 1.5rem;
-        border-radius: 9999px;
-        font-size: 1.2rem;
     }
-    .glass-btn:hover {
+    #installButton:hover {
         transform: translateY(-2px) scale(1.02);
         box-shadow: 0 0 15px rgba(88,166,255,0.8);
+    }
+    .message-box {
+        background: #21262d;
+        border: 1px solid #30363d;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        margin-top: 1rem;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .message-box.show {
+        opacity: 1;
+        transform: translateY(0);
     }
 </style>
 </head>
 <body>
 
-<div class="hud">
-    <h1 class="text-3xl font-bold mb-2">Welcome Back, Sphere Tamer 🪐</h1>
-    <p class="mb-4 text-gray-400">Tilt, tap, or drag me. I live for the attention.</p>
-    <button id="funButton" class="glass-btn">Make Me Spin Faster!</button>
+<div class="content">
+    <h1 class="text-4xl font-bold mb-4">Motion Power Sphere</h1>
+    <p class="text-lg text-gray-400 mb-6">
+        I’m the sphere that vibes with your moves. Pop me on your Home Screen — I’ll spin, I’ll shine, I’ll party with your taps. 
+    </p>
+    <button id="installButton" class="py-3 px-6 rounded-full text-lg">
+        Pop Me on Your Home Screen!
+    </button>
+    <div id="messageBox" class="message-box"></div>
 </div>
 
 <script>
-// Preload click sound
-const clickSound = new Audio('../click.wav');
-
-// 3D Sphere setup
 let mouseX = 0, mouseY = 0;
 let scene, camera, renderer, sphere;
 
+// Preload click sound
+const clickSound = new Audio('click.wav');
+
+// Link to real manifest in /app/
+const linkEl = document.createElement('link');
+linkEl.rel = 'manifest';
+linkEl.href = './app/manifest.json';
+document.head.appendChild(linkEl);
+
+// Init 3D sphere
 function init3D() {
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0x0d1117);
@@ -99,11 +121,13 @@ function init3D() {
     directionalLight.position.set(5, 5, 5).normalize();
     scene.add(directionalLight);
 
+    // Mouse move
     document.addEventListener('mousemove', e => {
         mouseX = (e.clientX / window.innerWidth) * 2 - 1;
         mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
     });
 
+    // Touch move
     document.addEventListener('touchmove', e => {
         if (e.touches.length > 0) {
             mouseX = (e.touches[0].clientX / window.innerWidth) * 2 - 1;
@@ -111,6 +135,7 @@ function init3D() {
         }
     });
 
+    // Device tilt
     if (window.DeviceOrientationEvent) {
         window.addEventListener('deviceorientation', e => {
             if (e.gamma && e.beta) {
@@ -139,19 +164,39 @@ function animate() {
 window.onload = () => {
     init3D();
     animate();
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('./service-worker.js');
-    }
 };
 
-// Button click fun
-document.getElementById('funButton').addEventListener('click', () => {
+// PWA Install Logic
+let deferredPrompt;
+const installButton = document.getElementById('installButton');
+const messageBox = document.getElementById('messageBox');
+
+function showMessage(text) {
+    messageBox.textContent = text;
+    messageBox.classList.add('show');
+}
+
+window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    deferredPrompt = e;
+    installButton.style.display = 'block';
+});
+
+installButton.addEventListener('click', async () => {
     clickSound.play();
-    sphere.rotation.x += 0.5;
-    sphere.rotation.y += 0.5;
-    alert("Woo! You gave me a turbo boost 💨");
+    if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+            showMessage('🚀 Locked & loaded! Your sphere is now chillin’ on your Home Screen.');
+        } else {
+            showMessage('😏 You blinked. Try again when you’re ready.');
+        }
+        deferredPrompt = null;
+    } else {
+        showMessage('🤖 Already hanging out on your Home Screen.');
+    }
 });
 </script>
-
 </body>
 </html>
