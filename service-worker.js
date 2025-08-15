@@ -3,7 +3,7 @@ self.addEventListener('install', (event) => {
     caches.open('mps-installer-v1').then((cache) => {
       return cache.addAll([
         '/',
-        '/index.html',
+        '/App/index.html',
         '/click.wav',
         '/manifest.json'
       ]);
