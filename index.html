@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Motion Power Sphere Installer</title>
+<title>Motion Power Sphere</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -72,7 +72,7 @@
 <div class="content">
     <h1 class="text-4xl font-bold mb-4">Motion Power Sphere</h1>
     <p class="text-lg text-gray-400 mb-6">
-        I’m the sphere that vibes with your moves. Pop me on your Home Screen — I’ll spin, I’ll shine, I’ll party with your taps. 
+        The sphere that vibes with your moves. Pop me on your Home Screen — give me a spin and watch me shine while stacking those TIFFY tokens. 
     </p>
     <button id="installButton" class="py-3 px-6 rounded-full text-lg">
         Pop Me on Your Home Screen!
@@ -87,10 +87,23 @@ let scene, camera, renderer, sphere;
 // Preload click sound
 const clickSound = new Audio('click.wav');
 
-// Link to real manifest in /app/
+// Manifest
+const manifest = {
+    name: "Motion Power Sphere",
+    short_name: "Sphere",
+    description: "Dynamic TiffyAI-powered sphere.",
+    start_url: "/Motion-Power-Sphere/",
+    display: "standalone",
+    background_color: "#0d1117",
+    theme_color: "#161b22",
+    icons: [
+        { src: "https://tiffyai.github.io/Blue-Key-Claim/TiffyAI-Token.png", sizes: "192x192", type: "image/png" },
+        { src: "https://tiffyai.github.io/Blue-Key-Claim/TiffyAI-Token.png", sizes: "512x512", type: "image/png" }
+    ]
+};
 const linkEl = document.createElement('link');
 linkEl.rel = 'manifest';
-linkEl.href = './app/manifest.json';
+linkEl.href = 'data:application/json;base64,' + btoa(JSON.stringify(manifest));
 document.head.appendChild(linkEl);
 
 // Init 3D sphere
@@ -139,8 +152,8 @@ function init3D() {
     if (window.DeviceOrientationEvent) {
         window.addEventListener('deviceorientation', e => {
             if (e.gamma && e.beta) {
-                mouseX = e.gamma / 45;
-                mouseY = e.beta / 45;
+                mouseX = e.gamma / 45; // left/right tilt
+                mouseY = e.beta / 45;  // front/back tilt
             }
         });
     }
@@ -197,6 +210,35 @@ installButton.addEventListener('click', async () => {
         showMessage('🤖 Already hanging out on your Home Screen.');
     }
 });
+
+// Service Worker
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        const swCode = `
+self.addEventListener('install', e => {
+    e.waitUntil(
+        caches.open('motion-power-sphere-v1').then(cache => {
+            return cache.addAll([
+                '/Motion-Power-Sphere/',
+                '/Motion-Power-Sphere/index.html'
+            ]);
+        })
+    );
+    self.skipWaiting();
+});
+self.addEventListener('fetch', e => {
+    e.respondWith(
+        caches.match(e.request).then(res => res || fetch(e.request))
+    );
+});
+`;
+        const swBlob = new Blob([swCode], { type: 'application/javascript' });
+        const swUrl = URL.createObjectURL(swBlob);
+        navigator.serviceWorker.register(swUrl)
+            .then(reg => console.log('Service Worker registered:', reg.scope))
+            .catch(err => console.error('Service Worker failed:', err));
+    });
+}
 </script>
 </body>
 </html>
