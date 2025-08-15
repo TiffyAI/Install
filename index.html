@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PWA Install Prompt</title>
+    <!-- Tailwind CSS for utility classes -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for a futuristic look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
+    <!-- Tone.js for the audio effect. This is a CDN link, so the library is loaded from the web. -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <style>
+        :root {
+            --neon-blue: #00e0ff;
+            --neon-pink: #ff00e0;
+            --button-glow: #00e0ff;
+        }
+
+        body {
+            /* The image URL is a placeholder as external GIFs can't be used directly */
+            background-image: url('https://tiffyai.github.io/Offline-/withdrawal.gif');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .futuristic-button {
+            position: relative;
+            z-index: 10;
+            cursor: pointer;
+            outline: none;
+            border: 2px solid transparent; /* Invisible border to start */
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            color: var(--neon-blue);
+            font-size: 1.5rem;
+            padding: 1rem 3rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 0 10px var(--neon-blue),
+                        0 0 20px var(--neon-blue),
+                        0 0 40px var(--neon-blue);
+            transition: all 0.3s ease-in-out,
+                        box-shadow 1.5s infinite ease-in-out;
+            animation: pulse-glow 2s infinite alternate ease-in-out;
+        }
+
+        .futuristic-button::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--neon-blue), var(--neon-pink));
+            z-index: -1;
+            filter: blur(8px);
+            transition: opacity 0.3s ease-in-out;
+            opacity: 0.5;
+        }
+
+        .futuristic-button:hover::before {
+            opacity: 1;
+            animation: none;
+        }
+        
+        .futuristic-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px var(--neon-pink),
+                        0 0 30px var(--neon-pink),
+                        0 0 60px var(--neon-pink);
+            color: var(--neon-pink);
+        }
+
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-blue); }
+            100% { box-shadow: 0 0 20px var(--neon-blue), 0 0 40px var(--neon-blue); }
+        }
+
+        .status-message {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(3px);
+            color: white;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            border: 1px solid var(--neon-blue);
+            box-shadow: 0 0 10px var(--neon-blue);
+        }
+
+        .ios-message {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(3px);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            border: 1px solid var(--neon-pink);
+            box-shadow: 0 0 10px var(--neon-pink);
+        }
+    </style>
+</head>
+<body class="h-screen w-screen flex items-center justify-center">
+
+    <div class="pwa-container text-center max-w-lg mx-auto p-4">
+        <h1 id="title" class="text-white text-3xl md:text-5xl mb-8 leading-tight drop-shadow-lg">Motion Power Sphere</h1>
+
+        <!-- The custom install button -->
+        <button id="installButton" class="futuristic-button rounded-xl hidden">
+            Play & Earn Now!
+        </button>
+
+        <!-- Status message area -->
+        <div id="statusMessage" class="status-message hidden mt-8">
+            <p id="statusText" class="text-white text-lg"></p>
+        </div>
+
+        <!-- iOS Fallback Instructions -->
+        <div id="iosInstructions" class="ios-message hidden mt-8">
+            <h2 class="text-xl mb-4 text-neon-pink">Installation Instructions for iOS</h2>
+            <p class="text-sm text-gray-300">
+                This browser doesn't support automatic installation. To install, please tap the
+                <span class="font-bold text-lg text-white">Share button</span>
+                <span class="text-white">(<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 24 24"><path d="M19 8.25a.75.75 0 00-.75-.75h-2.5a.75.75 0 000 1.5h2.5c.414 0 .75.336.75.75v10.5c0 .414-.336.75-.75.75H5.75a.75.75 0 01-.75-.75v-10.5c0-.414.336-.75.75-.75h2.5a.75.75 0 000-1.5h-2.5A2.25 2.25 0 003.5 10.75v10.5c0 1.243 1.007 2.25 2.25 2.25h12.5c1.243 0 2.25-1.007 2.25-2.25v-10.5A2.25 2.25 0 0019 8.25zM12 2.75a.75.75 0 00-.75.75v11.69l-2.22-2.22a.75.75 0 00-1.06 1.06l3.5 3.5c.32.32.742.479 1.16.479.418 0 .84-.159 1.16-.479l3.5-3.5a.75.75 0 00-1.06-1.06l-2.22 2.22V3.5a.75.75 0 00-.75-.75z"/></svg>)</span>
+                icon at the bottom of your screen, then select
+                <span class="font-bold text-white text-lg">'Add to Home Screen'</span>.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Check for iOS and handle accordingly
+        const isIOS = () => {
+            const userAgent = window.navigator.userAgent.toLowerCase();
+            return /iphone|ipad|ipod/.test(userAgent);
+        };
+
+        const statusMessage = document.getElementById('statusMessage');
+        const statusText = document.getElementById('statusText');
+        const installButton = document.getElementById('installButton');
+        const iosInstructions = document.getElementById('iosInstructions');
+        let deferredPrompt = null;
+
+        // Function to play a synthesized click sound
+        const playClickSound = () => {
+            // Since we can't load external audio files, we'll use Tone.js to synthesize a sound.
+            // This ensures the full experience works in the preview environment.
+            const synth = new Tone.Synth({
+                oscillator: {
+                    type: "sine"
+                },
+                envelope: {
+                    attack: 0.001,
+                    decay: 0.1,
+                    sustain: 0.1,
+                    release: 0.05
+                }
+            }).toDestination();
+            synth.triggerAttackRelease("C5", "8n");
+        };
+
+        // Event listener for the install prompt
+        window.addEventListener('beforeinstallprompt', (event) => {
+            // Prevent the browser's default install UI
+            event.preventDefault();
+            // Stash the event so we can trigger it later
+            deferredPrompt = event;
+            // Show our custom button if the app is installable
+            installButton.classList.remove('hidden');
+        });
+
+        // Event listener for the button click
+        installButton.addEventListener('click', async () => {
+            playClickSound();
+
+            if (deferredPrompt) {
+                // Show the install prompt
+                deferredPrompt.prompt();
+
+                // Wait for the user to respond to the prompt
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log(`User response to the install prompt: ${outcome}`);
+
+                // The prompt can only be used once, so we reset everything
+                deferredPrompt = null;
+                installButton.classList.add('hidden');
+            }
+        });
+
+        // Event listener for when the app is installed
+        window.addEventListener('appinstalled', () => {
+            installButton.classList.add('hidden');
+            statusMessage.classList.remove('hidden');
+            statusText.textContent = 'Awesome! The PWA has been installed.';
+            // Hide the status message after a few seconds
+            setTimeout(() => {
+                statusMessage.classList.add('hidden');
+            }, 5000);
+        });
+
+        // On initial load, check if it's iOS and provide fallback instructions
+        window.onload = () => {
+            if (isIOS()) {
+                installButton.classList.add('hidden');
+                iosInstructions.classList.remove('hidden');
+            }
+        };
+    </script>
+</body>
+</html>
