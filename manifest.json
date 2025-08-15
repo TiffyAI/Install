@@ -1,7 +1,7 @@
 {
   "name": "Motion PowerSphere Installer",
   "short_name": "MPS Installer",
-  "start_url": "/app/",
+  "start_url": "/app/index.html",
   "display": "standalone",
   "background_color": "#0d1117",
   "theme_color": "#161b22",
