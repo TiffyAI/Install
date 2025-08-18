@@ -1,6 +1,6 @@
 {
   "name": "Motion Power Sphere",
-  "short_name": "Sphere",
+  "short_name": "Motion Sphere",
   "description": "Dynamic TiffyAI-powered sphere.",
   "start_url": "https://tiffyai.github.io/Motion-Power-Sphere/",
   "display": "standalone",
